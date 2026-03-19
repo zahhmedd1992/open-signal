@@ -1,0 +1,397 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Open Signal Design System — Tailwind CSS 4
+   CSS-first configuration via @theme directives
+   ========================================================================== */
+
+@theme {
+  /* Typography — Font Families */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: Georgia, "Times New Roman", Times, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Typography — Major Third Scale (1.250) */
+  --text-xs: 0.64rem;
+  --text-sm: 0.8rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.563rem;
+  --text-2xl: 1.953rem;
+  --text-3xl: 2.441rem;
+  --text-4xl: 3.052rem;
+  --text-5xl: 3.815rem;
+
+  /* Colors — Light Mode Defaults */
+  --color-bg: #FAFAF9;
+  --color-bg-dark: #0F0F0E;
+  --color-text: #1A1A19;
+  --color-text-dark: #E8E8E7;
+  --color-accent: #2563EB;
+  --color-secondary: #7C3AED;
+  --color-success: #059669;
+  --color-surface: #F5F5F4;
+  --color-surface-dark: #1C1C1B;
+  --color-border: #E7E5E4;
+  --color-border-dark: #2D2D2C;
+  --color-muted: #78716C;
+  --color-muted-dark: #A8A29E;
+
+  /* Spacing */
+  --spacing-article: 680px;
+  --spacing-site: 1200px;
+
+  /* Transitions */
+  --transition-colors: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  transition: var(--transition-colors);
+}
+
+/* Dark mode — class-based on <html> */
+.dark body {
+  color: var(--color-text-dark);
+  background-color: var(--color-bg-dark);
+}
+
+/* Headlines use Inter */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: var(--color-text-dark);
+}
+
+/* Links */
+a {
+  color: var(--color-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: color-mix(in srgb, var(--color-accent) 80%, black);
+}
+
+.dark a:hover {
+  color: color-mix(in srgb, var(--color-accent) 85%, white);
+}
+
+/* Code */
+code, pre {
+  font-family: var(--font-mono);
+}
+
+code:not(pre code) {
+  font-size: 0.875em;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  background-color: var(--color-surface);
+  color: var(--color-secondary);
+}
+
+.dark code:not(pre code) {
+  background-color: var(--color-surface-dark);
+}
+
+pre {
+  padding: 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.dark pre {
+  background-color: var(--color-surface-dark);
+  border-color: var(--color-border-dark);
+}
+
+/* Selection */
+::selection {
+  background-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
+}
+
+/* ==========================================================================
+   Prose / Article Body Styling
+   ========================================================================== */
+
+.prose {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--color-text);
+  max-width: 680px;
+}
+
+.dark .prose {
+  color: var(--color-text-dark);
+}
+
+.prose h1 {
+  font-size: var(--text-4xl);
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.prose h2 {
+  font-size: var(--text-2xl);
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dark .prose h2 {
+  border-bottom-color: var(--color-border-dark);
+}
+
+.prose h3 {
+  font-size: var(--text-xl);
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose h4 {
+  font-size: var(--text-lg);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose p {
+  margin-bottom: 1.25rem;
+}
+
+.prose ul,
+.prose ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ol {
+  list-style-type: decimal;
+}
+
+.prose li {
+  margin-bottom: 0.375rem;
+}
+
+.prose li::marker {
+  color: var(--color-muted);
+}
+
+.dark .prose li::marker {
+  color: var(--color-muted-dark);
+}
+
+.prose blockquote {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1.25rem;
+  border-left: 3px solid var(--color-accent);
+  background-color: var(--color-surface);
+  font-style: italic;
+  color: var(--color-muted);
+}
+
+.dark .prose blockquote {
+  background-color: var(--color-surface-dark);
+  color: var(--color-muted-dark);
+}
+
+.prose hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+.dark .prose hr {
+  border-top-color: var(--color-border-dark);
+}
+
+.prose img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.prose table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+}
+
+.prose thead th {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.dark .prose thead th {
+  border-bottom-color: var(--color-border-dark);
+}
+
+.prose tbody td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dark .prose tbody td {
+  border-bottom-color: var(--color-border-dark);
+}
+
+.prose figure {
+  margin: 1.5rem 0;
+}
+
+.prose figcaption {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.dark .prose figcaption {
+  color: var(--color-muted-dark);
+}
+
+/* ==========================================================================
+   Briefing Styles
+   ========================================================================== */
+
+.briefing-list {
+  counter-reset: briefing;
+  list-style: none;
+  padding-left: 0;
+}
+
+.briefing-list > li {
+  counter-increment: briefing;
+  position: relative;
+  padding-left: 3rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dark .briefing-list > li {
+  border-bottom-color: var(--color-border-dark);
+}
+
+.briefing-list > li:last-child {
+  border-bottom: none;
+}
+
+.briefing-list > li::before {
+  content: counter(briefing, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Surface backgrounds with dark mode */
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.dark .bg-surface {
+  background-color: var(--color-surface-dark);
+}
+
+.border-themed {
+  border-color: var(--color-border);
+}
+
+.dark .border-themed {
+  border-color: var(--color-border-dark);
+}
+
+.text-muted {
+  color: var(--color-muted);
+}
+
+.dark .text-muted {
+  color: var(--color-muted-dark);
+}
+
+/* Content pillar colors */
+.pillar-deep-signals { color: var(--color-accent); }
+.pillar-briefings { color: var(--color-secondary); }
+.pillar-signal-maps { color: var(--color-success); }
+.pillar-the-long-view { color: #D97706; }
+
+.dark .pillar-the-long-view { color: #F59E0B; }
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-dark);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

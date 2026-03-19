@@ -1,0 +1,148 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+---
+
+{headings.length > 0 && (
+  <nav class="toc" aria-label="Table of contents" data-toc>
+    <h4 class="font-sans text-xs font-bold uppercase tracking-widest text-muted mb-4">
+      On this page
+    </h4>
+
+    <!-- Mobile: collapsible toggle -->
+    <button
+      type="button"
+      class="toc-mobile-toggle flex w-full items-center justify-between rounded-md border border-themed bg-surface px-3 py-2 font-sans text-sm font-medium lg:hidden"
+      aria-expanded="false"
+      data-toc-toggle
+    >
+      <span>Table of contents</span>
+      <svg class="toc-chevron h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+      </svg>
+    </button>
+
+    <ul class="toc-list hidden space-y-1 lg:block" data-toc-list>
+      {headings.map((heading) => (
+        <li>
+          <a
+            href={`#${heading.slug}`}
+            class:list={[
+              "toc-link block rounded-sm py-1 font-sans text-sm no-underline transition-colors",
+              heading.depth === 2 ? "pl-0 font-medium" : "pl-4 text-xs",
+            ]}
+            style="color: var(--color-muted);"
+            data-toc-link
+            data-heading-id={heading.slug}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  /* Desktop: always visible heading hidden, list shown */
+  @media (min-width: 1024px) {
+    .toc-mobile-toggle {
+      display: none;
+    }
+  }
+
+  /* Active link highlight */
+  .toc-link.active {
+    color: var(--color-accent) !important;
+    border-left: 2px solid var(--color-accent);
+    padding-left: 0.5rem;
+  }
+
+  .toc-link.active[class*="pl-4"] {
+    padding-left: 1.5rem;
+  }
+
+  /* Hover */
+  .toc-link:hover {
+    color: var(--color-text) !important;
+  }
+
+  .dark .toc-link:hover {
+    color: var(--color-text-dark) !important;
+  }
+
+  /* Chevron rotation when expanded */
+  [data-toc-toggle][aria-expanded="true"] .toc-chevron {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const toc = document.querySelector("[data-toc]");
+    if (!toc) return;
+
+    /* --- Mobile toggle --- */
+    const toggleBtn = toc.querySelector("[data-toc-toggle]");
+    const list = toc.querySelector("[data-toc-list]");
+
+    if (toggleBtn && list) {
+      toggleBtn.addEventListener("click", () => {
+        const isExpanded = toggleBtn.getAttribute("aria-expanded") === "true";
+        toggleBtn.setAttribute("aria-expanded", String(!isExpanded));
+        list.classList.toggle("hidden");
+      });
+    }
+
+    /* --- Scroll spy: highlight active heading --- */
+    const links = toc.querySelectorAll("[data-toc-link]") as NodeListOf<HTMLAnchorElement>;
+    if (links.length === 0) return;
+
+    const headingIds = Array.from(links).map((link) => link.getAttribute("data-heading-id")!);
+    const headingEls = headingIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+
+    if (headingEls.length === 0) return;
+
+    let activeId = headingIds[0];
+
+    function setActive(id: string) {
+      if (id === activeId) return;
+      activeId = id;
+      links.forEach((link) => {
+        if (link.getAttribute("data-heading-id") === id) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
+    }
+
+    /* Initial highlight */
+    setActive(headingIds[0]);
+
+    /* Intersection Observer for scroll spy */
+    const observer = new IntersectionObserver(
+      (entries) => {
+        /* Find the topmost visible heading */
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+        if (visibleEntries.length > 0) {
+          setActive(visibleEntries[0].target.id);
+        }
+      },
+      {
+        rootMargin: "-80px 0px -60% 0px",
+        threshold: 0,
+      }
+    );
+
+    headingEls.forEach((el) => observer.observe(el));
+  });
+</script>

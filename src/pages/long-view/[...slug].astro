@@ -1,0 +1,36 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { findRelated } from '../../utils/related';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const entries = await getCollection('long-view');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+};
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const allEntries = await getCollection('long-view');
+const related = findRelated(entry.id, entry.data.tags ?? [], allEntries).map((e) => ({
+  ...e,
+  collection: 'long-view',
+}));
+---
+
+<ArticleLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  publishDate={entry.data.publishDate}
+  updatedDate={entry.data.updatedDate}
+  tags={entry.data.tags}
+  collection="long-view"
+  headings={headings}
+  related={related}
+>
+  <Content />
+</ArticleLayout>

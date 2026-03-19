@@ -1,0 +1,145 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+
+const navLinks = [
+  { label: "Deep Signals", href: "/deep-signals" },
+  { label: "Briefings", href: "/briefings" },
+  { label: "Signal Maps", href: "/signal-maps" },
+  { label: "The Long View", href: "/long-view" },
+  { label: "Open Source", href: "/open-source" },
+  { label: "Archive", href: "/archive" },
+  { label: "About", href: "/about" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-50 w-full border-b border-themed backdrop-blur-md"
+  style="background-color: color-mix(in srgb, var(--color-bg) 85%, transparent);"
+>
+  <div class="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-3 sm:px-6">
+    <!-- Logo -->
+    <a href="/" class="group flex items-center gap-2 no-underline">
+      <span
+        class="font-sans text-lg font-black tracking-wider"
+        style="color: var(--color-text); letter-spacing: 0.15em;"
+      >
+        OPEN SIGNAL
+      </span>
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav class="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "rounded-md px-3 py-1.5 font-sans text-sm font-medium no-underline transition-colors",
+              currentPath.startsWith(link.href)
+                ? "bg-surface"
+                : "hover:bg-surface",
+            ]}
+            style={
+              currentPath.startsWith(link.href)
+                ? "color: var(--color-accent);"
+                : "color: var(--color-muted);"
+            }
+            aria-current={currentPath.startsWith(link.href) ? "page" : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <!-- Right side: theme toggle + mobile menu -->
+    <div class="flex items-center gap-2">
+      <ThemeToggle />
+
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-md p-2 lg:hidden"
+        style="color: var(--color-muted);"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        data-mobile-toggle
+      >
+        <!-- Hamburger icon -->
+        <svg class="hamburger-icon h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        <!-- Close icon -->
+        <svg class="close-icon hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Nav Panel -->
+  <nav
+    class="mobile-nav hidden border-t border-themed lg:hidden"
+    aria-label="Mobile navigation"
+    data-mobile-nav
+  >
+    <div class="mx-auto max-w-[1200px] space-y-1 px-4 py-4 sm:px-6">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "block rounded-md px-3 py-2.5 font-sans text-sm font-medium no-underline transition-colors",
+              currentPath.startsWith(link.href)
+                ? "bg-surface"
+                : "hover:bg-surface",
+            ]}
+            style={
+              currentPath.startsWith(link.href)
+                ? "color: var(--color-accent);"
+                : "color: var(--color-text);"
+            }
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+</header>
+
+<!-- Dark mode header background fix -->
+<style>
+  .dark header {
+    background-color: color-mix(in srgb, var(--color-bg-dark) 85%, transparent) !important;
+  }
+
+  .dark [data-mobile-toggle]:hover {
+    color: var(--color-text-dark);
+  }
+
+  .dark .mobile-nav a {
+    color: var(--color-text-dark);
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const toggleBtn = document.querySelector("[data-mobile-toggle]");
+    const mobileNav = document.querySelector("[data-mobile-nav]");
+    const hamburgerIcon = toggleBtn?.querySelector(".hamburger-icon");
+    const closeIcon = toggleBtn?.querySelector(".close-icon");
+
+    if (!toggleBtn || !mobileNav) return;
+
+    toggleBtn.addEventListener("click", () => {
+      const isExpanded = toggleBtn.getAttribute("aria-expanded") === "true";
+      toggleBtn.setAttribute("aria-expanded", String(!isExpanded));
+      mobileNav.classList.toggle("hidden");
+      hamburgerIcon?.classList.toggle("hidden");
+      closeIcon?.classList.toggle("hidden");
+    });
+  });
+</script>

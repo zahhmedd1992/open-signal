@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+type CollectionName = 'deep-signals' | 'briefings' | 'signal-maps' | 'long-view' | 'open-source';
+
+const deepSignals = await getCollection('deep-signals');
+const briefings = await getCollection('briefings');
+const signalMaps = await getCollection('signal-maps');
+const longView = await getCollection('long-view');
+const openSource = await getCollection('open-source');
+
+interface TaggedEntry {
+  id: string;
+  collection: CollectionName;
+  data: {
+    title: string;
+    description: string;
+    publishDate: Date;
+    tags?: string[];
+    featured?: boolean;
+    [key: string]: unknown;
+  };
+}
+
+const allArticles: TaggedEntry[] = [
+  ...deepSignals.map((e) => ({ ...e, collection: 'deep-signals' as CollectionName })),
+  ...briefings.map((e) => ({ ...e, collection: 'briefings' as CollectionName })),
+  ...signalMaps.map((e) => ({ ...e, collection: 'signal-maps' as CollectionName })),
+  ...longView.map((e) => ({ ...e, collection: 'long-view' as CollectionName })),
+  ...openSource.map((e) => ({ ...e, collection: 'open-source' as CollectionName })),
+].sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+const pillars: { label: string; value: CollectionName | 'all' }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Deep Signals', value: 'deep-signals' },
+  { label: 'Briefings', value: 'briefings' },
+  { label: 'Signal Maps', value: 'signal-maps' },
+  { label: 'The Long View', value: 'long-view' },
+  { label: 'Open Source', value: 'open-source' },
+];
+---
+
+<BaseLayout title="Archive" description="All articles from Open Signal, sorted by date.">
+  <div class="mx-auto max-w-[var(--spacing-site)] px-4 py-12 sm:px-6">
+    <h1 class="mb-8" style="font-size: var(--text-3xl);">Archive</h1>
+
+    <!-- Pillar filter (client-side) -->
+    <div class="flex flex-wrap gap-2 mb-8" id="pillar-filters">
+      {pillars.map((p) => (
+        <button
+          data-filter={p.value}
+          class:list={[
+            "pillar-btn font-sans text-sm px-3 py-1.5 rounded border transition-colors cursor-pointer",
+            p.value === 'all'
+              ? "active-filter"
+              : "border-themed text-muted",
+          ]}
+        >
+          {p.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Article grid -->
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" id="article-grid">
+      {allArticles.map((entry) => (
+        <div data-collection={entry.collection}>
+          <ArticleCard
+            title={entry.data.title}
+            description={entry.data.description}
+            publishDate={entry.data.publishDate}
+            slug={entry.id}
+            collection={entry.collection}
+          />
+        </div>
+      ))}
+    </div>
+
+    {allArticles.length === 0 && (
+      <p class="text-center py-16 text-muted">No articles yet. Check back soon.</p>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .active-filter {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
+  .pillar-btn:not(.active-filter):hover {
+    color: var(--color-text);
+    border-color: var(--color-muted);
+  }
+  .dark .pillar-btn:not(.active-filter):hover {
+    color: var(--color-text-dark);
+    border-color: var(--color-muted-dark);
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.pillar-btn');
+    const items = document.querySelectorAll<HTMLElement>('#article-grid > div');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter;
+
+        buttons.forEach((b) => {
+          b.classList.remove('active-filter');
+          b.classList.add('border-themed', 'text-muted');
+        });
+        btn.classList.remove('border-themed', 'text-muted');
+        btn.classList.add('active-filter');
+
+        items.forEach((item) => {
+          if (filter === 'all' || item.dataset.collection === filter) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>

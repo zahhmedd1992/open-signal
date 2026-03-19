@@ -1,0 +1,92 @@
+---
+import { formatShortDate, isNew } from '../utils/dates';
+
+interface Props {
+  title: string;
+  description: string;
+  publishDate: Date;
+  slug: string;
+  collection: string;
+  featured?: boolean;
+}
+
+const { title, description, publishDate, slug, collection, featured = false } = Astro.props;
+const href = `/${collection}/${slug}`;
+const isRecent = isNew(publishDate);
+
+const pillarColorClass: Record<string, string> = {
+  'deep-signals': 'pillar-deep-signals',
+  'briefings': 'pillar-briefings',
+  'signal-maps': 'pillar-signal-maps',
+  'long-view': 'pillar-the-long-view',
+  'open-source': 'pillar-deep-signals',
+};
+
+const colorClass = pillarColorClass[collection] ?? '';
+
+function formatCollectionLabel(c: string): string {
+  const labels: Record<string, string> = {
+    'deep-signals': 'Deep Signals',
+    'briefings': 'Briefings',
+    'signal-maps': 'Signal Maps',
+    'long-view': 'The Long View',
+    'open-source': 'Open Source',
+  };
+  return labels[c] ?? c;
+}
+---
+
+<a
+  href={href}
+  class:list={[
+    "group block rounded-lg border p-5 no-underline transition-colors",
+    featured ? "border-themed bg-surface" : "border-themed",
+  ]}
+  style="--hover-bg: var(--color-surface);"
+>
+  <div class="flex items-center gap-2 font-sans text-xs mb-2" style="color: var(--color-muted);">
+    <span class:list={["uppercase tracking-wider font-medium", colorClass]}>
+      {formatCollectionLabel(collection)}
+    </span>
+    <span>&middot;</span>
+    <time datetime={publishDate.toISOString()}>{formatShortDate(publishDate)}</time>
+    {isRecent && (
+      <span
+        class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full uppercase tracking-wider font-medium"
+        style="background-color: color-mix(in srgb, var(--color-accent) 15%, transparent); color: var(--color-accent);"
+      >
+        New
+      </span>
+    )}
+  </div>
+  <h3 class="font-sans text-base font-semibold mb-1.5 line-clamp-2 transition-colors" style="color: var(--color-text);">
+    {title}
+  </h3>
+  <p class="text-sm line-clamp-2" style="color: var(--color-muted);">{description}</p>
+</a>
+
+<style>
+  a:hover {
+    background-color: var(--color-surface);
+    border-color: var(--color-muted) !important;
+  }
+  a:hover h3 {
+    color: var(--color-accent) !important;
+  }
+  .dark a h3 {
+    color: var(--color-text-dark) !important;
+  }
+  .dark a:hover h3 {
+    color: var(--color-accent) !important;
+  }
+  .dark a:hover {
+    background-color: var(--color-surface-dark);
+    border-color: var(--color-muted-dark) !important;
+  }
+  .dark a p {
+    color: var(--color-muted-dark) !important;
+  }
+  .dark a > div {
+    color: var(--color-muted-dark) !important;
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+import { getCollection, render } from 'astro:content';
+import BriefingLayout from '../../layouts/BriefingLayout.astro';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const entries = await getCollection('briefings');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BriefingLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  publishDate={entry.data.publishDate}
+  updatedDate={entry.data.updatedDate}
+  tags={entry.data.tags}
+  items={entry.data.items}
+>
+  <Content />
+</BriefingLayout>

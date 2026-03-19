@@ -1,0 +1,88 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+import { formatDate } from '../utils/dates';
+
+interface BriefingItem {
+  title: string;
+  body: string;
+  whyItMatters: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  tags?: string[];
+  items?: BriefingItem[];
+}
+
+const { title, description, publishDate, updatedDate, tags = [], items = [] } = Astro.props;
+const siteUrl = Astro.site?.toString() ?? 'https://open-signal.vercel.app';
+const pageUrl = `${siteUrl}${Astro.url.pathname}`;
+---
+
+<BaseLayout title={title} description={description}>
+  <ReadingProgress />
+
+  <article class="mx-auto max-w-[var(--spacing-article)] px-4 py-12 sm:px-6">
+    <header class="mb-10">
+      <div class="flex items-center gap-3 font-sans text-sm mb-3" style="color: var(--color-muted);">
+        <a href="/briefings" class="uppercase tracking-wider font-medium no-underline pillar-briefings">
+          Briefings
+        </a>
+        <span>&middot;</span>
+        <time datetime={publishDate.toISOString()}>{formatDate(publishDate)}</time>
+      </div>
+      <h1 class="text-balance mb-4" style="font-size: var(--text-4xl);">
+        {title}
+      </h1>
+      <p class="font-sans text-lg" style="color: var(--color-muted);">{description}</p>
+      {updatedDate && (
+        <p class="font-sans text-sm mt-3" style="color: var(--color-muted);">
+          Updated <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+        </p>
+      )}
+
+      <div class="flex items-center justify-between mt-6">
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <a
+                href={`/topics/${tag}`}
+                class="font-sans text-xs px-2.5 py-1 rounded-full border border-themed no-underline text-muted transition-colors hover:border-[var(--color-muted)]"
+              >
+                {tag}
+              </a>
+            ))}
+          </div>
+        )}
+        <ShareButtons title={title} url={pageUrl} />
+      </div>
+    </header>
+
+    {items.length > 0 && (
+      <section class="mb-10">
+        <ol class="briefing-list">
+          {items.map((item) => (
+            <li>
+              <h2 class="font-sans font-bold mb-2" style="font-size: var(--text-lg);">
+                {item.title}
+              </h2>
+              <p class="mb-3">{item.body}</p>
+              <p class="font-sans text-sm" style="color: var(--color-muted);">
+                <strong style="color: var(--color-accent);">Why it matters:</strong> {item.whyItMatters}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )}
+
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

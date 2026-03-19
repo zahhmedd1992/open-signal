@@ -1,0 +1,139 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { formatDate } from '../utils/dates';
+import { readingTime } from '../utils/reading-time';
+
+interface Props {
+  title: string;
+  description: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  tags?: string[];
+  collection: string;
+  rawContent?: string;
+  headings?: { depth: number; slug: string; text: string }[];
+  related?: Array<{
+    id: string;
+    collection: string;
+    data: { title: string; description: string; publishDate: Date; tags?: string[] };
+  }>;
+}
+
+const { title, description, publishDate, updatedDate, tags = [], collection, rawContent, headings = [], related = [] } = Astro.props;
+const readTime = rawContent ? readingTime(rawContent) : null;
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const pillarLabels: Record<string, string> = {
+  'deep-signals': 'Deep Signals',
+  'briefings': 'Briefings',
+  'signal-maps': 'Signal Maps',
+  'long-view': 'The Long View',
+  'open-source': 'Open Source',
+};
+
+const pillarColorClass: Record<string, string> = {
+  'deep-signals': 'pillar-deep-signals',
+  'briefings': 'pillar-briefings',
+  'signal-maps': 'pillar-signal-maps',
+  'long-view': 'pillar-the-long-view',
+  'open-source': 'pillar-deep-signals',
+};
+
+const siteUrl = Astro.site?.toString() ?? 'https://open-signal.vercel.app';
+const pageUrl = `${siteUrl}${Astro.url.pathname}`;
+---
+
+<BaseLayout title={title} description={description}>
+  <ReadingProgress />
+
+  <article class="py-12">
+    <!-- Article Header — constrained width -->
+    <header class="mx-auto max-w-[var(--spacing-article)] px-4 mb-10 sm:px-6">
+      <div class="flex items-center gap-3 font-sans text-sm mb-3" style="color: var(--color-muted);">
+        <a
+          href={`/${collection}`}
+          class:list={["uppercase tracking-wider font-medium no-underline", pillarColorClass[collection] ?? '']}
+        >
+          {pillarLabels[collection] ?? collection}
+        </a>
+        <span>&middot;</span>
+        <time datetime={publishDate.toISOString()}>{formatDate(publishDate)}</time>
+        {readTime && (
+          <>
+            <span>&middot;</span>
+            <span>{readTime}</span>
+          </>
+        )}
+      </div>
+      <h1 class="text-balance mb-4" style="font-size: var(--text-4xl);">
+        {title}
+      </h1>
+      <p class="font-sans text-lg" style="color: var(--color-muted);">{description}</p>
+      {updatedDate && (
+        <p class="font-sans text-sm mt-3" style="color: var(--color-muted);">
+          Updated <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+        </p>
+      )}
+
+      <div class="flex items-center justify-between mt-6">
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <a
+                href={`/topics/${tag}`}
+                class="font-sans text-xs px-2.5 py-1 rounded-full border border-themed no-underline text-muted transition-colors hover:border-[var(--color-muted)]"
+              >
+                {tag}
+              </a>
+            ))}
+          </div>
+        )}
+        <ShareButtons title={title} url={pageUrl} />
+      </div>
+    </header>
+
+    <!-- Content area with optional TOC sidebar -->
+    <div class="mx-auto max-w-[var(--spacing-site)] px-4 sm:px-6">
+      <div class:list={[
+        tocHeadings.length > 2
+          ? "lg:grid lg:grid-cols-[var(--spacing-article)_1fr] lg:gap-12 lg:justify-center"
+          : "",
+      ]}>
+        <!-- Article body -->
+        <div class="prose mx-auto lg:mx-0">
+          <slot />
+        </div>
+
+        <!-- Sidebar TOC (wide screens: sticky sidebar; narrow: collapsible above content) -->
+        {tocHeadings.length > 2 && (
+          <aside class="hidden lg:block">
+            <div class="sticky top-20">
+              <TableOfContents headings={tocHeadings} />
+            </div>
+          </aside>
+        )}
+      </div>
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <aside class="mx-auto max-w-[var(--spacing-article)] px-4 pb-16 sm:px-6">
+      <h2 class="font-sans text-xl font-bold mb-6 border-t border-themed pt-8">Related Articles</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        {related.map((entry) => (
+          <ArticleCard
+            title={entry.data.title}
+            description={entry.data.description}
+            publishDate={entry.data.publishDate}
+            slug={entry.id}
+            collection={entry.collection}
+          />
+        ))}
+      </div>
+    </aside>
+  )}
+</BaseLayout>

@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const deepSignals = await getCollection('deep-signals');
+const briefings = await getCollection('briefings');
+const signalMaps = await getCollection('signal-maps');
+const longView = await getCollection('long-view');
+const openSource = await getCollection('open-source');
+
+const latestBriefing = briefings
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())[0];
+
+const featuredAnalysis = [...deepSignals, ...longView]
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 4);
+
+const latestSignalMaps = signalMaps
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3);
+---
+
+<BaseLayout>
+  <!-- Hero -->
+  <section class="mx-auto max-w-[var(--spacing-site)] px-4 pt-20 pb-16 text-center sm:px-6">
+    <h1 class="font-black tracking-tight mb-4" style="font-size: var(--text-5xl); letter-spacing: 0.1em;">
+      OPEN SIGNAL
+    </h1>
+    <p class="font-sans text-xl font-medium mb-6" style="color: var(--color-accent);">
+      Free intelligence for everyone
+    </p>
+    <p class="mx-auto max-w-2xl text-lg leading-relaxed" style="color: var(--color-muted);">
+      AI-powered analysis of technology, markets, and strategy &mdash; delivered without paywalls,
+      ads, or subscription gates. Premium-quality intelligence that believes access to insight
+      should not be a privilege.
+    </p>
+  </section>
+
+  <!-- Latest Briefing -->
+  {latestBriefing && (
+    <section class="mx-auto max-w-[var(--spacing-site)] px-4 pb-16 sm:px-6">
+      <h2 class="font-sans text-sm uppercase tracking-widest font-medium mb-4 pillar-briefings">Latest Briefing</h2>
+      <a
+        href={`/briefings/${latestBriefing.id}`}
+        class="group block border border-themed rounded-lg p-8 no-underline transition-colors"
+      >
+        <h3 class="font-sans text-2xl font-bold mb-2 transition-colors" style="color: var(--color-text);">
+          {latestBriefing.data.title}
+        </h3>
+        <p style="color: var(--color-muted);">{latestBriefing.data.description}</p>
+      </a>
+    </section>
+  )}
+
+  <!-- Featured Analysis -->
+  {featuredAnalysis.length > 0 && (
+    <section class="mx-auto max-w-[var(--spacing-site)] px-4 pb-16 sm:px-6">
+      <h2 class="font-sans text-sm uppercase tracking-widest font-medium mb-4 pillar-deep-signals">Featured Analysis</h2>
+      <div class="grid gap-4 md:grid-cols-2">
+        {featuredAnalysis.map((entry) => {
+          const coll = deepSignals.includes(entry) ? 'deep-signals' : 'long-view';
+          return (
+            <ArticleCard
+              title={entry.data.title}
+              description={entry.data.description}
+              publishDate={entry.data.publishDate}
+              slug={entry.id}
+              collection={coll}
+              featured={entry.data.featured}
+            />
+          );
+        })}
+      </div>
+    </section>
+  )}
+
+  <!-- Signal Maps -->
+  {latestSignalMaps.length > 0 && (
+    <section class="mx-auto max-w-[var(--spacing-site)] px-4 pb-16 sm:px-6">
+      <h2 class="font-sans text-sm uppercase tracking-widest font-medium mb-4 pillar-signal-maps">Signal Maps</h2>
+      <div class="grid gap-4 md:grid-cols-3">
+        {latestSignalMaps.map((entry) => (
+          <ArticleCard
+            title={entry.data.title}
+            description={entry.data.description}
+            publishDate={entry.data.publishDate}
+            slug={entry.id}
+            collection="signal-maps"
+          />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- About Teaser -->
+  <section class="mx-auto max-w-[var(--spacing-site)] px-4 pb-16 sm:px-6">
+    <div class="border border-themed rounded-lg p-8 text-center bg-surface">
+      <h2 class="font-sans text-xl font-bold mb-3">About this project</h2>
+      <p class="mx-auto max-w-2xl mb-4" style="color: var(--color-muted);">
+        Open Signal is an experiment in autonomous, AI-generated intelligence.
+        Every piece of analysis is produced transparently, published freely, and built in the open.
+      </p>
+      <a
+        href="/about"
+        class="inline-block font-sans text-sm rounded px-4 py-2 border no-underline transition-colors"
+        style="color: var(--color-accent); border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);"
+      >
+        Learn more
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .group:hover h3 {
+    color: var(--color-accent) !important;
+  }
+  .group:hover {
+    background-color: var(--color-surface);
+  }
+  .dark .group h3 {
+    color: var(--color-text-dark) !important;
+  }
+  .dark .group:hover h3 {
+    color: var(--color-accent) !important;
+  }
+  .dark .group:hover {
+    background-color: var(--color-surface-dark);
+  }
+  a[href="/about"]:hover {
+    background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
+</style>

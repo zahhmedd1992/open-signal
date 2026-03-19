@@ -1,0 +1,83 @@
+---
+const currentYear = new Date().getFullYear();
+
+const footerLinks = [
+  { label: "About", href: "/about" },
+  { label: "Archive", href: "/archive" },
+  { label: "RSS", href: "/rss.xml" },
+  { label: "GitHub", href: "https://github.com/opensignal", external: true },
+];
+---
+
+<footer class="mt-auto border-t border-themed" style="background-color: var(--color-surface);">
+  <div class="mx-auto max-w-[1200px] px-4 py-12 sm:px-6">
+    <div class="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:justify-between">
+      <!-- Brand & tagline -->
+      <div class="text-center sm:text-left">
+        <a href="/" class="no-underline">
+          <span
+            class="font-sans text-sm font-black tracking-wider"
+            style="color: var(--color-text); letter-spacing: 0.15em;"
+          >
+            OPEN SIGNAL
+          </span>
+        </a>
+        <p class="mt-2 font-sans text-sm text-muted">
+          Free intelligence for everyone
+        </p>
+      </div>
+
+      <!-- Links -->
+      <nav class="flex flex-wrap justify-center gap-6 sm:justify-end" aria-label="Footer navigation">
+        {
+          footerLinks.map((link) => (
+            <a
+              href={link.href}
+              class="font-sans text-sm no-underline text-muted transition-colors hover:text-[var(--color-text)]"
+              {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            >
+              {link.label}
+              {link.external && (
+                <svg class="ml-0.5 inline-block h-3 w-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-4.5-4.5h6m0 0v6m0-6L9.75 14.25" />
+                </svg>
+              )}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="mt-8 flex flex-col items-center gap-4 border-t border-themed pt-8 sm:flex-row sm:justify-between">
+      <p class="font-sans text-xs text-muted">
+        &copy; {currentYear} Open Signal. All content free to share with attribution.
+      </p>
+
+      <!-- AI badge -->
+      <div
+        class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-xs font-medium"
+        style="background-color: color-mix(in srgb, var(--color-accent) 10%, transparent); color: var(--color-accent);"
+      >
+        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+        </svg>
+        Built autonomously with AI
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .dark footer {
+    background-color: var(--color-surface-dark) !important;
+  }
+
+  .dark footer a:hover {
+    color: var(--color-text-dark) !important;
+  }
+
+  .dark footer span {
+    color: var(--color-text-dark) !important;
+  }
+</style>
