@@ -1,0 +1,191 @@
+---
+title: "Signal Map: The AI Infrastructure Stack — From Silicon to Application"
+description: "A layer-by-layer map of the full AI infrastructure stack, from chips and systems to clouds, platforms, models, and applications."
+publishDate: 2026-03-12
+tags: ["ai-infrastructure", "tech-stack", "nvidia", "cloud", "frameworks"]
+topics: ["AI Infrastructure", "Cloud Computing"]
+sources: ["company announcements", "cloud provider documentation", "developer ecosystem surveys", "earnings reports", "technical benchmarks"]
+mapType: "tech-stack"
+featured: true
+---
+
+## The Stack at a Glance
+
+Every AI application — from a chatbot answering customer questions to a model generating protein structures — depends on an infrastructure stack that spans six distinct layers. Each layer has its own competitive dynamics, cost structures, and bottlenecks. Understanding this stack is essential for anyone making infrastructure decisions, evaluating AI companies, or trying to identify where value will accrue as the market matures.
+
+The layers, from bottom to top: silicon (chips), systems (servers and networking), cloud (compute providers), platform (training and serving frameworks), model (the AI models themselves), and application (end-user products). Value creation and capture differ significantly at each level, and the companies that dominate one layer rarely dominate adjacent ones.
+
+## Stack Overview
+
+| Layer | Function | Key Players | Primary Bottleneck | Value Capture |
+|---|---|---|---|---|
+| **Silicon** | Raw compute and memory | NVIDIA, AMD, Intel, Google, AWS, Broadcom | Manufacturing capacity, HBM supply | Very high margins (NVIDIA ~75% gross) |
+| **Systems** | Servers, networking, cooling | Dell, HPE, Super Micro, NVIDIA (DGX) | Power delivery, thermal management | Moderate margins, high volume |
+| **Cloud** | On-demand GPU/TPU access | AWS, Azure, GCP, Oracle, CoreWeave, Lambda | GPU availability, pricing | High revenue, margin pressure |
+| **Platform** | Training and serving software | PyTorch, JAX, vLLM, NVIDIA NIM, Anyscale | Framework fragmentation, optimization complexity | Mostly open-source; value in managed services |
+| **Model** | Pre-trained and fine-tuned models | OpenAI, Anthropic, Google, Meta, Mistral | Training cost, data quality | High for frontier; commoditizing for smaller models |
+| **Application** | End-user AI products | Thousands of startups, enterprise SaaS | Distribution, retention, workflow integration | Varies widely; highest potential at scale |
+
+## Layer 1: Silicon
+
+The chip layer is where the fundamental compute constraints originate, and it is the most concentrated layer in the stack. NVIDIA's dominance here cascades through every layer above it.
+
+### Key Players
+
+| Company | Key Products | Focus | Architecture | Market Role |
+|---|---|---|---|---|
+| **NVIDIA** | H100, H200, B100/B200 (Blackwell), GB200 | Training + Inference | GPU (CUDA) | Dominant; ~80%+ data center AI GPU share |
+| **AMD** | MI300X, MI300A, MI350 (planned) | Training + Inference | GPU (ROCm) | Credible challenger; gaining cloud traction |
+| **Intel** | Gaudi 3 (Habana Labs) | Training + Inference | Purpose-built accelerator | Struggling for relevance |
+| **Google** | TPU v5p, TPU v5e, Trillium (v6) | Training + Inference | Custom ASIC | Internal use + Google Cloud |
+| **AWS** | Trainium2, Inferentia2 | Training / Inference | Custom ASIC | AWS ecosystem cost optimization |
+| **Broadcom** | Custom AI accelerators (for Google, Meta) | Various | Custom ASIC design | Design partner for hyperscaler custom silicon |
+| **Groq** | LPU | Inference | Deterministic synchronous | Ultra-low latency inference specialist |
+| **Cerebras** | Wafer Scale Engine 3 | Training + Inference | Wafer-scale chip | Niche high-performance applications |
+
+The silicon layer's economics are defined by two scarcities: leading-edge fabrication capacity (concentrated at TSMC) and High Bandwidth Memory supply (concentrated at SK Hynix and Samsung). These supply constraints have kept GPU prices elevated and delivery timelines extended, directly shaping the cost structure of every AI workload.
+
+NVIDIA's competitive moat at this layer is not purely hardware — it is the CUDA software ecosystem. CUDA represents nearly two decades of accumulated libraries, optimizations, tooling, and developer familiarity. Competitors must compete against both the hardware and this software inheritance simultaneously.
+
+## Layer 2: Systems
+
+The systems layer transforms individual chips into deployable compute infrastructure. This layer has become significantly more complex as AI workloads scale, driven by power consumption, thermal management, and high-speed interconnect requirements.
+
+### Key Players
+
+| Company | Key Products | Specialization |
+|---|---|---|
+| **NVIDIA** | DGX B200, DGX SuperPOD | Turnkey AI systems, NVLink interconnect |
+| **Dell Technologies** | PowerEdge XE series | Enterprise AI server integration |
+| **Super Micro** | GPU-optimized servers | High density, liquid cooling, fast time-to-market |
+| **HPE** | Cray EX series | Supercomputer-scale AI systems |
+| **Cisco** | Nexus networking | Data center fabric for AI clusters |
+| **Arista Networks** | AI spine networking | High-bandwidth, low-latency networking |
+| **InfiniBand (NVIDIA)** | ConnectX-7, Quantum switches | GPU-to-GPU interconnect fabric |
+
+The critical engineering challenge at this layer is interconnect bandwidth between GPUs. Training large models requires thousands of GPUs to communicate continuously, and the speed of this communication directly determines training efficiency. NVIDIA's NVLink and InfiniBand technologies provide the highest-bandwidth interconnects available, creating another layer of competitive advantage that extends beyond the GPU itself.
+
+Power consumption has emerged as a first-order constraint. A single rack of eight NVIDIA B200 GPUs can consume over 10 kilowatts. Clusters of thousands of GPUs require megawatts of power delivery and corresponding cooling capacity. This has made power availability and data center thermal design critical factors in AI infrastructure planning, spawning a secondary market in AI-optimized data centers and liquid cooling solutions.
+
+## Layer 3: Cloud
+
+The cloud layer provides on-demand access to AI compute, abstracting away the complexity of hardware procurement, data center operations, and systems management. This layer is bifurcating into hyperscalers (who offer AI compute alongside their full cloud platform) and GPU-specialized clouds (who focus exclusively on AI workloads).
+
+### Key Players
+
+| Provider | AI Compute Offerings | Differentiation | Primary Customer |
+|---|---|---|---|
+| **AWS** | NVIDIA GPUs, Trainium, Inferentia | Broadest service portfolio, Bedrock model marketplace | Enterprise, startups |
+| **Microsoft Azure** | NVIDIA GPUs, OpenAI exclusive partnership | Preferred for OpenAI model access, enterprise integration | Enterprise (M365 ecosystem) |
+| **Google Cloud** | NVIDIA GPUs, TPU v5, Trillium | TPU price-performance, Vertex AI platform | AI-native companies, researchers |
+| **Oracle Cloud** | NVIDIA GPUs, bare-metal GPU clusters | Aggressive pricing, large contiguous clusters | AI training workloads |
+| **CoreWeave** | NVIDIA GPUs (H100, B200) | GPU-native cloud, high-performance networking | AI startups, model training |
+| **Lambda Labs** | NVIDIA GPUs | Developer-friendly GPU cloud | ML researchers, small teams |
+| **Together AI** | NVIDIA GPUs, open-source model serving | Inference platform + compute | Developers using open-source models |
+| **Crusoe Energy** | NVIDIA GPUs, clean energy powered | Carbon-neutral AI compute | Climate-conscious enterprises |
+
+The hyperscalers' AI strategy extends well beyond raw compute provision. AWS Bedrock, Azure AI Studio, and Google Cloud Vertex AI are each building managed platforms that handle model hosting, fine-tuning, evaluation, and orchestration. These platforms create switching costs by integrating model serving with the rest of each cloud's service portfolio — storage, databases, networking, security, and identity.
+
+The GPU-specialized clouds compete primarily on price, availability, and simplicity. CoreWeave, in particular, has built a multi-billion-dollar business by offering large, contiguous GPU clusters optimized for AI training — a workload pattern that hyperscalers have sometimes struggled to serve at competitive prices due to the overhead of their general-purpose infrastructure.
+
+## Layer 4: Platform
+
+The platform layer provides the software frameworks and tools that AI engineers use to train, fine-tune, optimize, and serve models. This layer is predominantly open-source, with value captured through managed services and commercial wrappers.
+
+### Training Frameworks
+
+| Framework | Developer | Primary Use | Ecosystem Role |
+|---|---|---|---|
+| **PyTorch** | Meta (now Linux Foundation) | Model training and research | De facto standard for AI research and production |
+| **JAX** | Google DeepMind | Model training (esp. TPU workloads) | Preferred for Google ecosystem and research |
+| **DeepSpeed** | Microsoft | Distributed training optimization | Enables training of very large models on GPU clusters |
+| **Megatron-LM** | NVIDIA | Large-scale model training | Reference implementation for distributed LLM training |
+| **Ray / Anyscale** | Anyscale | Distributed compute orchestration | Horizontal scaling for training and serving |
+
+### Serving and Inference
+
+| Framework | Developer | Primary Use | Key Feature |
+|---|---|---|---|
+| **vLLM** | UC Berkeley (open-source) | LLM inference serving | PagedAttention, high-throughput serving |
+| **TensorRT-LLM** | NVIDIA | Optimized inference on NVIDIA GPUs | Maximum GPU utilization for inference |
+| **NVIDIA NIM** | NVIDIA | Containerized model deployment | Pre-optimized inference microservices |
+| **Triton Inference Server** | NVIDIA | Multi-framework model serving | Framework-agnostic inference serving |
+| **Ollama** | Open-source | Local model serving | Developer-friendly local LLM deployment |
+| **llama.cpp** | Open-source (Georgi Gerganov) | CPU/GPU inference | Efficient quantized inference, broad hardware support |
+
+### Orchestration and Tooling
+
+| Tool | Developer | Primary Use |
+|---|---|---|
+| **LangChain / LangGraph** | LangChain Inc. | LLM application orchestration, agent frameworks |
+| **Weights & Biases** | W&B | Experiment tracking, model monitoring |
+| **MLflow** | Databricks | ML lifecycle management |
+| **Hugging Face** | Hugging Face | Model distribution, datasets, collaboration |
+| **Modal** | Modal Labs | Serverless GPU compute for ML workloads |
+
+PyTorch's dominance at the training layer is the software equivalent of NVIDIA's hardware dominance — pervasive and self-reinforcing. Almost every major model released in the past three years was trained using PyTorch or a PyTorch derivative. This creates a gravitational pull for tooling, optimization work, and developer education that is extremely difficult for alternatives to overcome. JAX maintains a significant niche, particularly within Google's ecosystem and for research requiring advanced automatic differentiation, but PyTorch's community mass is its defining advantage.
+
+On the inference side, the landscape is more fragmented and evolving rapidly. vLLM has emerged as the leading open-source inference engine, with its PagedAttention algorithm enabling substantially higher throughput for LLM serving. NVIDIA's TensorRT-LLM and NIM provide maximum performance on NVIDIA hardware but sacrifice portability. This tension between performance optimization and hardware portability is a recurring theme at the platform layer.
+
+## Layer 5: Model
+
+The model layer sits at the intersection of research and infrastructure. Pre-trained foundation models represent enormous fixed costs (tens to hundreds of millions of dollars in compute for frontier training runs) that are amortized over inference volume. This cost structure favors scale and creates natural oligopoly dynamics at the frontier.
+
+| Tier | Examples | Characteristics | Training Cost (Estimated) |
+|---|---|---|---|
+| **Frontier Closed** | GPT-4o, Claude 3.5, Gemini Ultra, o1/o3 | Highest capability, proprietary, API access | $100M - $500M+ |
+| **Frontier Open** | Llama 3.1 405B, DeepSeek-V3 | Near-frontier capability, downloadable weights | $50M - $200M+ |
+| **Mid-tier Open** | Llama 3.1 70B, Qwen2.5 72B, Mixtral 8x22B | Strong capability, practical to self-host | $10M - $50M |
+| **Efficient Open** | Llama 3.1 8B, Mistral 7B, Phi-3, Gemma 2 | Good capability at small scale, edge-deployable | $1M - $10M |
+| **Specialized / Fine-tuned** | CodeLlama, Med-PaLM, BloombergGPT | Domain-optimized performance | Varies (fine-tuning: $10K - $1M) |
+
+The model layer is undergoing rapid commoditization at every tier below the absolute frontier. The performance gap between the best open model and the best closed model at any given parameter count has compressed to the point where, for many production applications, the choice between open and closed is driven by deployment preferences and cost rather than capability differences.
+
+This commoditization is shifting value capture away from the model itself and toward the layers above (applications, workflows) and below (efficient serving infrastructure). Model providers that do not control either the application layer or the infrastructure layer risk becoming interchangeable commodity suppliers.
+
+## Layer 6: Application
+
+The application layer is where AI capabilities become end-user products. This layer is the most fragmented, the most dynamic, and — for many investors — the most uncertain in terms of where durable value will accrue.
+
+### Application Categories
+
+| Category | Examples | Business Model | AI Integration Pattern |
+|---|---|---|---|
+| **AI Assistants** | ChatGPT, Claude.ai, Gemini, Perplexity | Subscription + API | Model as the product |
+| **Coding Tools** | GitHub Copilot, Cursor, Replit, Codeium | Subscription (seat-based) | Model embedded in IDE |
+| **Enterprise Search** | Glean, Coveo AI, Elastic AI | Enterprise SaaS | RAG over enterprise data |
+| **Content Generation** | Jasper, Copy.ai, Writer | Subscription | Model as content engine |
+| **Vertical AI** | Harvey (legal), Abridge (healthcare), Ramp (finance) | Vertical SaaS | Domain-specific fine-tuning + workflow |
+| **AI Agents** | Adept, Cognition (Devin), MultiOn | Usage-based (emerging) | Autonomous task execution |
+| **Image/Video Generation** | Midjourney, Runway, Pika, Stability AI | Subscription + credits | Generative media pipeline |
+| **Voice/Audio AI** | ElevenLabs, Descript, AssemblyAI | Usage-based | Specialized audio models |
+
+The application layer's fundamental challenge is defensibility. When the underlying models are improving rapidly and available from multiple providers, application-layer companies must build moats through distribution, workflow integration, proprietary data, and user experience rather than model capability alone. The applications that have gained the most traction — GitHub Copilot (distribution through Microsoft), Perplexity (novel UX for search), Harvey (deep legal domain expertise) — each combine model capabilities with at least one additional source of competitive advantage.
+
+## Cross-Layer Dependencies
+
+The stack is not a set of independent layers — critical dependencies run vertically across it.
+
+**NVIDIA's vertical reach** extends from silicon (GPU design) through systems (DGX, NVLink, InfiniBand) to platform (CUDA, TensorRT, NIM, Triton) and increasingly into cloud (DGX Cloud partnerships). This vertical integration is NVIDIA's deepest competitive advantage: each layer reinforces the others, making it progressively more difficult for customers to substitute at any single point.
+
+**Hyperscaler vertical integration** follows a similar logic. Google controls TPU silicon, GCP cloud infrastructure, JAX/TensorFlow frameworks, Gemini models, and application integration across Search, Workspace, and Android. AWS spans Trainium/Inferentia chips, EC2/ECS infrastructure, SageMaker/Bedrock platforms, and application services. This vertical integration enables optimization across layer boundaries that third-party stacks cannot match.
+
+**Open-source horizontal layers** (PyTorch, vLLM, Llama, Hugging Face) provide a counterweight to vertical integration by creating shared infrastructure that works across multiple hardware and cloud providers. These horizontal layers reduce switching costs and prevent any single vertically integrated player from capturing the entire stack.
+
+## What to Watch
+
+**The inference cost curve.** The cost per token of LLM inference is falling rapidly — driven by hardware improvements, software optimization (quantization, speculative decoding, batching), and competition. This cost curve is the single most important variable for the application layer: when inference is cheap enough, entire categories of applications become economically viable that are currently marginal.
+
+**Custom silicon proliferation.** Every major cloud provider is investing in custom AI chips. If these efforts succeed in offering price-performance competitive with NVIDIA at scale, the silicon layer's concentration — and NVIDIA's pricing power — will erode. Watch Trainium2 adoption at AWS and TPU v6 (Trillium) performance benchmarks at Google Cloud as leading indicators.
+
+**Framework consolidation or fragmentation.** The platform layer could consolidate around PyTorch and a small number of inference engines, or it could fragment further as different hardware targets demand different software stacks. Hardware-agnostic compilation layers (OpenAI Triton, Apache TVM, MLIR) could reduce fragmentation by providing portable performance across chip architectures.
+
+**Application layer shakeout.** The AI application ecosystem has been fueled by venture funding and low barriers to building model-wrapper applications. As funding conditions tighten and incumbents integrate AI into existing products, many application-layer startups will face existential pressure. The survivors will be those with genuine workflow integration, proprietary data advantages, or distribution moats that make them difficult to replicate.
+
+**Energy constraints.** AI infrastructure's power consumption is growing faster than data center capacity. Microsoft, Google, Amazon, and Meta have collectively committed to hundreds of megawatts of new power capacity, including investments in nuclear and renewable energy. If power becomes the binding constraint on AI scaling, it will reshape every layer of the stack — favoring energy-efficient architectures, edge inference, and model compression techniques.
+
+## The Bigger Picture
+
+The AI infrastructure stack in 2026 exhibits a pattern common to maturing technology ecosystems: concentrated value at the bottom (NVIDIA's silicon dominance), open and commoditized middle layers (open-source frameworks and models), and fragmented competition at the top (applications). This structure rewards vertical integration at scale (NVIDIA, Google) and horizontal platform plays (Hugging Face, PyTorch) while squeezing companies that operate at a single layer without differentiation.
+
+The most consequential shifts over the next two to three years will likely occur at the boundaries between layers: custom silicon eroding GPU dominance, managed platforms absorbing framework complexity, model commoditization shifting value to applications, and application-layer competition determining which AI capabilities become infrastructure versus features. Understanding these layer dynamics — not just individual company strategies — is essential for navigating the AI market's next phase.
