@@ -1,0 +1,190 @@
+---
+title: "One Month In: The Data So Far"
+description: "First-month retrospective with real numbers. Content output, technical performance, editorial quality trajectory, and what changes for month two."
+publishDate: 2026-02-01
+tags: ["open-signal", "retrospective", "metrics", "transparency", "building-in-public"]
+topics: ["Open Source", "Publishing", "Metrics"]
+sources: ["project documentation", "build metrics", "content audit"]
+projectArea: "infrastructure"
+featured: false
+---
+
+## Measuring the Experiment
+
+Open Signal launched on January 1st with a set of claims about what AI-powered publishing could achieve. One month is enough time to check those claims against reality. Not enough time to declare success or failure — a single month of data is directional, not definitive — but enough to see whether the trajectory is promising or concerning.
+
+This is the data. All of it. The numbers that look good and the numbers that do not.
+
+## Content Output
+
+### Volume
+
+In January, Open Signal published the following:
+
+| Content Type | Published | Target | Hit Rate |
+|---|---|---|---|
+| Signal Briefings | 21 | 22 (weekdays) | 95% |
+| Deep Signals | 14 | 12-16 | On target |
+| Signal Maps | 5 | 4-8 | On target |
+| The Long View | 4 | 4-5 | On target |
+| Open Source | 2 | 1-2 | On target |
+
+**Total pieces published:** 46
+
+**Total word count:** Approximately 78,000 words across all content types.
+
+One briefing was missed due to a pipeline failure on a Tuesday morning — a malformed research input that caused the drafting stage to produce output that failed schema validation. The failure was caught by the build process, which is the system working as designed, but the root cause (an encoding issue in a source document) took long enough to diagnose that the briefing was delayed past the useful window. By the time it was fixed, the day's news cycle had moved on.
+
+The remaining output was on schedule. The pipeline's consistency on volume has been its most reliable characteristic. It does not get sick, take vacations, or miss deadlines because a piece is harder to write than expected. When the inputs are clean, the output arrives on time.
+
+### Topic Distribution
+
+The month's coverage skewed heavily toward AI infrastructure, which was partly intentional (it is our primary coverage area) and partly a reflection of what the news cycle provided.
+
+| Topic Area | Pieces | % of Total |
+|---|---|---|
+| AI/ML (infrastructure, capabilities, models) | 18 | 39% |
+| Cloud and enterprise technology | 8 | 17% |
+| Semiconductors and hardware | 6 | 13% |
+| Startups and venture capital | 5 | 11% |
+| Tech policy and regulation | 5 | 11% |
+| Other (energy, biotech, digital economy) | 4 | 9% |
+
+The AI/ML concentration is higher than we want. The editorial goal is for no single topic area to exceed 30% of monthly output. January's 39% reflects both the genuine density of AI news in the period and a pipeline tendency to gravitate toward topics where source material is most abundant. AI generates more public commentary, more published analysis, and more corporate announcements than most other technology sectors, which means the research stage surfaces more AI material, which means the ideation stage has more AI angles to choose from.
+
+This is a calibration problem, not a structural one. The fix is straightforward: weight topic diversity explicitly in the ideation stage so that a surplus of AI research material does not automatically translate to a surplus of AI coverage. This adjustment is being implemented for February.
+
+### Word Count by Content Type
+
+| Content Type | Avg. Words | Target Range | Assessment |
+|---|---|---|---|
+| Signal Briefings | 680 | 500-800 | On target |
+| Deep Signals | 2,100 | 1,500-3,000 | On target |
+| Signal Maps | 1,800 | Variable | Reasonable |
+| The Long View | 3,600 | 3,000-5,000 | On target |
+| Open Source | 1,350 | Variable | Reasonable |
+
+Word counts have been consistent. The pipeline respects length constraints reliably, which is one of the simpler aspects of prompt engineering to get right. Longer is not always better, and several Deep Signals pieces were deliberately kept under 2,000 words when the topic did not warrant more.
+
+## Technical Performance
+
+### Build and Deploy
+
+| Metric | January Average |
+|---|---|
+| Build time | 4.2 seconds |
+| Deploy time (build + CDN propagation) | 38 seconds |
+| Build failures | 3 |
+| Deploy failures | 0 |
+| Uptime | 100% |
+
+Astro's build performance has been excellent. A 4.2-second average build time for a site with 46 content pieces and growing means the publishing workflow has essentially no friction. Push content, wait four seconds, the site is live.
+
+The three build failures were all caused by malformed MDX — specifically, JSX expressions that were syntactically invalid. Two were missing closing tags in structured data components. One was a frontmatter field with a value that did not match the schema enum. All three were caught at build time, which is the point of schema validation: errors fail loudly in the pipeline, not silently in production.
+
+Zero deploy failures in a month of daily pushes. Vercel's deployment infrastructure has been invisible in the best sense — it simply works.
+
+### Page Performance
+
+Lighthouse scores sampled across all content types, measured on representative pages at mobile and desktop resolution:
+
+| Metric | Mobile | Desktop |
+|---|---|---|
+| Performance | 97 | 99 |
+| Accessibility | 96 | 96 |
+| Best Practices | 100 | 100 |
+| SEO | 97 | 97 |
+
+These numbers are a direct result of Astro's static-first architecture. No client-side JavaScript framework, no hydration overhead, no layout shifts from dynamically loaded content. The pages are HTML and CSS, served from a CDN edge node. There is not much that can go wrong.
+
+The mobile performance score occasionally dips on Signal Maps pages that include large tables. Wide tables on narrow screens require horizontal scrolling, which Lighthouse penalizes slightly. This is an acceptable tradeoff — restructuring the data to avoid tables would reduce clarity for desktop readers, who are the majority of the audience for that content type.
+
+### Infrastructure Cost
+
+January's total infrastructure cost: **$0**.
+
+This is not a typo and not a misrepresentation. Vercel's free tier includes enough build minutes and bandwidth for Open Signal's current scale. The domain is on a temporary Vercel subdomain. There is no database, no server-side runtime, no third-party API with metered billing.
+
+This will change as the project grows. A custom domain costs money. If traffic increases significantly, bandwidth charges may apply. Phase 2 infrastructure — GitHub Actions for automation, Umami for analytics — will have costs. But the foundational observation stands: a static site served from a CDN is very nearly free to operate, and this cost structure is one of Open Signal's most important strategic advantages.
+
+## Editorial Quality Assessment
+
+This is the section that matters most and is hardest to quantify honestly.
+
+### The Internal Scoring Rubric
+
+Every piece published in January was scored on a 1-10 scale across four dimensions: factual grounding, analytical depth, clarity, and originality. These scores are subjective — they represent editorial judgment, not objective measurement. But applied consistently, they reveal patterns.
+
+| Dimension | January Average | Target |
+|---|---|---|
+| Factual Grounding | 8.2 | >= 8.0 |
+| Analytical Depth | 6.8 | >= 7.5 |
+| Clarity | 8.0 | >= 8.0 |
+| Originality | 5.9 | >= 7.0 |
+| **Overall Weighted** | **7.2** | **>= 7.5** |
+
+Two numbers stand out as concerning: analytical depth at 6.8 and originality at 5.9. Both are below target.
+
+**Analytical depth** measures whether a piece goes beyond restating available information and offers genuine analysis — connections the reader would not make on their own, frameworks that recontextualize familiar facts, implications that are not immediately obvious. A score of 6.8 means the pipeline is producing competent synthesis most of the time but only occasionally rising to the level of genuine analytical contribution. The briefings score higher on this dimension (their analytical comments are constrained and therefore more focused), while the Deep Signals pieces show the most variance — some are genuinely insightful, others are well-organized summaries dressed in analytical language.
+
+**Originality** is the weakest dimension, and it reflects the fundamental limitation of AI-generated analysis discussed in previous Open Source posts. A score of 5.9 means that most pieces cover their topics in ways the reader could have found elsewhere. The framing might be cleaner, the structure might be tighter, but the underlying angle is rarely surprising. The pieces that scored highest on originality were ones where the ideation stage produced a non-obvious connection between two topics — and those were the minority.
+
+Factual grounding and clarity are at or above target, which is encouraging. The pipeline produces accurate, well-organized content reliably. The challenge is making that content analytically distinctive rather than merely competent.
+
+### Quality Trajectory
+
+The more important question than "where are we?" is "which direction are we moving?"
+
+Week-over-week quality scores show a modest upward trend in analytical depth (from 6.4 in week one to 7.1 in week four) and a roughly flat trend in originality. The depth improvement is likely attributable to prompt refinements — specifically, iterating on the ideation prompts to push for more specific analytical claims rather than general observations. The flat originality trend suggests that prompt adjustments alone are insufficient to solve the originality problem. Something structural may need to change in how the ideation stage works.
+
+### Pieces We Killed
+
+Five pieces were drafted in January and not published. This is a data point worth mentioning because it indicates the quality gate is functional — not everything the pipeline produces clears the bar.
+
+Three were Deep Signals pieces that failed the analytical depth check: well-written pieces that restated available information without adding meaningful interpretation. One was a Signal Map where the data was too thin to support the structured format — the pipeline produced a framework with more categories than the evidence justified. One was a Long View piece that ran to 4,500 words without arriving at a thesis — a classic pipeline failure mode where the drafting stage generates a comprehensive survey instead of a structured argument.
+
+Killing pieces costs nothing except the time spent reviewing them. It is worth doing because publishing mediocre work degrades reader trust faster than missing a publication day.
+
+## What Is Working
+
+**Consistent output.** 46 pieces in 31 days, on schedule, with one miss. For a free publication with no staff, this is the fundamental proof of concept. The pipeline produces.
+
+**Technical infrastructure.** Zero downtime, sub-second page loads, perfect Lighthouse scores on best practices, negligible cost. The Astro-plus-Vercel stack is the right foundation for this project.
+
+**Briefing quality.** The daily briefings are the pipeline's most reliable content type. The constrained format — five items, factual summary, analytical comment — plays to AI's strengths in synthesis and structured output. Reader engagement data (what we have of it, which is limited without analytics in place) suggests the briefings are the most consistently useful output.
+
+**Build-time validation.** The Astro content collection schema catches errors before they reach production. Three build failures in a month sounds like a problem but is actually the system working. Those would have been broken pages or malformed content in production without schema enforcement.
+
+## What Is Not Working
+
+**Originality.** The most important metric and the weakest performance. A publication that reliably tells you what you already know in a cleaner format is useful but not compelling. This is the primary area requiring improvement and the one where incremental prompt adjustments show the least progress.
+
+**Topic concentration.** 39% AI coverage is too high. A publication that covers technology through the lens of one topic is not a technology publication — it is an AI publication with occasional diversions. The topic weighting adjustment for February is a priority.
+
+**Self-editing as quality gate.** The self-editing stage catches mechanical issues (unsupported claims, repetitive phrasing, structural problems) but does not reliably identify the difference between a piece that is merely competent and one that is genuinely worth publishing. The five killed pieces were all caught in manual review, not by the automated quality check. The self-editing stage needs to be more discerning, and building that discernment into a prompt is a non-trivial problem.
+
+**No analytics.** Running a publication for a month without proper analytics is like flying without instruments. We have indirect signals — referral patterns, time on page from server logs, social engagement — but nothing systematic. Umami deployment is a top priority for February.
+
+## What Changes for Month Two
+
+Based on January's data, February priorities are:
+
+**Topic diversity weighting.** The ideation stage will include explicit topic balance constraints: no single topic area should exceed 30% of weekly output. When AI material is overrepresented in the research stage, the pipeline will actively seek underrepresented topics to balance.
+
+**Ideation stage restructuring.** The current ideation approach (generate multiple angles, select the best) is producing too many consensus-aligned framings. The restructured approach will add a specific step: after generating the initial angle, explicitly challenge it and generate an alternative framing that contradicts or complicates the first. The goal is to increase the frequency of genuinely non-obvious analytical angles.
+
+**Analytics deployment.** Umami goes live in the first week of February. This gives us actual data on what readers engage with, which pieces drive return visits, and where readers drop off. Editorial decisions should be informed by reader behavior, not assumptions.
+
+**Self-editing refinement.** The self-editing prompt will be expanded with examples of pieces that cleared the quality bar and pieces that did not, with explicit annotations explaining the difference. This is an attempt to give the self-editing stage the kind of calibration that currently exists only in human editorial judgment.
+
+**Pagefind integration.** With 46 pieces published and growing, search becomes important. Pagefind builds a search index at build time with no JavaScript runtime cost, which fits the Astro architecture perfectly.
+
+## The Verdict at Thirty Days
+
+Open Signal works. Not perfectly, not at the quality level it aspires to, but it works. The pipeline produces structured, factually grounded, analytically competent content on a reliable schedule at negligible cost. The technical infrastructure is solid. The editorial quality is above the minimum threshold and below the aspirational target.
+
+The question at thirty days is whether the gap between where we are and where we want to be is closing. The answer is: slowly, on some dimensions, and not at all on others. Analytical depth is improving through prompt iteration. Originality is not improving through prompt iteration alone, which means a different approach is needed.
+
+Month two will test whether the structural changes — topic weighting, ideation restructuring, analytics-informed editorial decisions — move the needle on the metrics that matter most. If they do, the trajectory is promising. If they do not, we will need to reconsider more fundamental aspects of how the pipeline works.
+
+Either way, the data will be published here. That is the commitment.

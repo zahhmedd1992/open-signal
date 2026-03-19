@@ -1,0 +1,116 @@
+---
+title: "Our Content Pipeline: How AI Writes Analysis"
+description: "A technical deep dive into the content generation process behind Open Signal — from research to publication, including the prompts, the editing layers, and the honest limitations."
+publishDate: 2026-01-18
+tags: ["open-signal", "content-pipeline", "ai-publishing", "transparency", "prompting", "llm"]
+topics: ["Open Source", "AI Automation", "Content Pipeline"]
+sources: ["project documentation"]
+projectArea: "content-pipeline"
+featured: false
+---
+
+## Showing the Machinery
+
+Most publications guard their editorial process like a trade secret. Open Signal does the opposite. If readers are going to trust analysis produced with AI, they should understand exactly how that analysis gets made — including the parts that are messy, the parts that are fragile, and the parts where human judgment still intervenes.
+
+This is a technical account of the content pipeline: how a piece goes from topic to published article, what the AI actually does at each step, and where the process works well and where it does not.
+
+## The Five-Stage Pipeline
+
+Every piece of content on Open Signal passes through five stages: research, ideation, drafting, self-editing, and publishing. The stages are distinct in function but not always sequential — a piece that fails self-editing may loop back to drafting, or all the way back to ideation if the framing is wrong.
+
+### Stage 1: Research
+
+Research is the input layer. Before the pipeline can produce anything, it needs source material — the raw information from which analysis is constructed.
+
+For daily briefings, the research phase draws from a defined set of public sources: major technology news outlets, company press releases, regulatory filings, published earnings data, and documented product announcements. The goal is not to gather every scrap of information on a topic but to identify the five to seven most significant developments from the previous day and collect enough context for each to support analytical commentary.
+
+For Deep Signals and longer-form pieces, research is more targeted. A piece on inference infrastructure costs, for example, would draw on cloud provider pricing pages, benchmark data from published research, earnings call transcripts mentioning inference margins, and technical documentation on optimization techniques. The research prompt specifies the topic and requests structured source material organized by relevance.
+
+What this looks like in practice: the research stage receives a topic or coverage area and returns a structured document — a set of facts, figures, quotes, and contextual information organized by subtopic, with source categories noted for each item. This document becomes the input for everything that follows.
+
+**Where research works well:** Breadth. The pipeline can synthesize information from a wider surface area than a single human researcher scanning the same sources in the same time frame. It is thorough in a way that is difficult to sustain manually across daily production.
+
+**Where research struggles:** Depth and recency. The pipeline works with publicly available information, which means it misses anything behind paywalls, anything discussed in private channels, and anything that happened in the last few hours before generation. It also lacks the ability to evaluate source reliability beyond surface-level heuristics. A human researcher develops intuitions about which sources overstate, which understate, and which are reliably accurate. The pipeline treats all public sources with roughly equal weight unless explicitly instructed otherwise.
+
+### Stage 2: Ideation
+
+Ideation is where the pipeline determines the angle — not just what to write about, but what to say about it. This is the stage that separates synthesis from analysis, and it is the hardest to get right.
+
+For briefings, ideation is relatively constrained. The format is fixed: five items, each with a factual summary and an analytical comment. The ideation work is selecting which five developments matter most and identifying the analytical hook for each — why does this matter, who benefits, what does it signal about broader dynamics?
+
+For longer pieces, ideation is more open-ended. The pipeline receives the research document and produces a set of potential angles: thesis statements, structural framings, counterarguments to explore. The prompt at this stage is deliberately challenging. It asks not just "what is the obvious analysis here?" but "what would a smart reader already know, and what would genuinely add to their understanding?"
+
+The ideation prompt for a Deep Signal piece looks something like this in structure:
+
+Given the research material, identify the most analytically valuable angle — not the most obvious summary, but the framing that would make a knowledgeable reader see the topic differently. State a clear thesis. Identify the strongest evidence for it. Identify the strongest counterargument. Explain why this angle matters to someone making strategic decisions.
+
+This is the stage where the pipeline's tendency toward consensus is most visible. Left to its own defaults, ideation gravitates toward framings that reflect the prevailing conversation about a topic. Prompting for contrarian or non-obvious angles helps, but the results are inconsistent. Sometimes the pipeline produces a genuinely surprising framing. More often, it produces a well-organized version of the existing discussion.
+
+### Stage 3: Drafting
+
+Drafting is where the research and ideation come together into prose. The pipeline receives the research document and the selected angle, and produces a structured article that follows the format conventions of the relevant content type.
+
+The drafting prompt encodes Open Signal's editorial voice: precise, direct, analytically grounded, no filler. It specifies structural requirements — lead with the insight, not the background; distinguish reporting from analysis; state uncertainty explicitly. It includes anti-patterns to avoid: "The implications are significant" (says nothing), "It remains to be seen" (a non-statement), "In today's rapidly evolving landscape" (throat-clearing that adds no information).
+
+The draft comes back structured with section headers, analytical progression from evidence to interpretation, and source attribution embedded in the text. For briefings, the format is more rigid — each item follows a strict template. For long-form pieces, the structure is flexible within the conventions of the content type.
+
+**Where drafting excels:** Structure and fluency. The pipeline produces well-organized, grammatically clean prose that follows the specified format. It handles technical topics with appropriate precision, explains complex dynamics clearly, and maintains a consistent level of detail throughout a piece. It does not have off days. It does not rush the ending because it is tired.
+
+**Where drafting struggles:** Two recurring problems are worth describing honestly.
+
+First, the pipeline defaults to a kind of elevated genericism — prose that sounds authoritative but lacks specificity. A sentence like "major cloud providers are investing heavily in inference optimization" is factually accurate and analytically empty. The best human analysts write with concrete specificity: which provider, how much investment, what optimization technique, with what measured result. The pipeline can do this when the research material provides specifics, but when the data is thin, it fills the gaps with vague authority rather than admitting the gap.
+
+Second, originality remains the persistent limitation. The pipeline reliably produces B+ analysis — competent, clear, well-structured. It inconsistently produces A-level work — pieces with a genuine insight or connection that the reader did not anticipate. The gap between B+ and A is where human editorial instinct lives, and it is the gap the pipeline has not reliably closed.
+
+### Stage 4: Self-Editing
+
+Self-editing is where the draft gets scrutinized. This is a separate pass — the pipeline reviews its own output against explicit quality criteria.
+
+The self-editing prompt asks specific questions. Does every factual claim in this piece trace to the source material? Are there any sentences that sound analytical but actually say nothing specific? Does the piece go beyond restating the consensus view? Is the structure logical — does each section build on the previous one? Are there any unsupported assertions presented as established facts?
+
+This stage catches a meaningful number of issues. Unsubstantiated claims get flagged. Vague sentences get tightened. Structural problems — a conclusion that does not follow from the evidence, an analysis section that restates the summary instead of advancing beyond it — get identified and corrected.
+
+The self-editing pass also checks for the anti-patterns that accumulate over high-volume production: repetitive transitional phrases, overused analytical frameworks, the specific verbal tics that become visible when a pipeline produces content daily. A running list of flagged constructions gets updated as new patterns emerge.
+
+What self-editing does not catch reliably: factual errors that are plausible. If the research material contains an incorrect figure and the draft reproduces it, the self-editing pass is unlikely to flag it because the claim is internally consistent with the source. This is a known limitation and one of the reasons the pipeline is not fully autonomous — factual verification against external sources requires a different kind of check than internal consistency review.
+
+### Stage 5: Publishing
+
+Publishing is the mechanical stage: the final article gets formatted as MDX with the correct frontmatter schema, committed to the content repository, and deployed through the build pipeline.
+
+This stage is mostly automated. The content is validated against the Astro content collection schema — which checks for required fields, correct data types, and valid enum values — and then deployed through Vercel's build pipeline. If the schema validation fails, the build fails, and the content does not reach production.
+
+The publishing stage also applies formatting standards: consistent header hierarchy, proper code block formatting for any technical content, and metadata tagging for topic classification and search indexing.
+
+## What the Prompts Actually Look Like
+
+Transparency about the pipeline means being specific about the prompting strategy. The prompts are not magic. They are structured instructions that encode editorial judgment into a repeatable process.
+
+A simplified representation of the layers:
+
+**System context** establishes the publication identity: Open Signal's editorial voice, quality standards, and analytical philosophy. This context persists across all content generation and provides the baseline for tone and approach.
+
+**Content type instructions** specify the structural requirements of each format. A briefing prompt encodes the five-item structure, the factual-summary-plus-analytical-comment format, and the ordering-by-significance convention. A Deep Signal prompt encodes the thesis-evidence-counterargument-implications structure.
+
+**Anti-pattern rules** list specific constructions to avoid. These are updated regularly as new patterns emerge from production. They are specific and literal: not "avoid vague language" but "do not use the phrase 'the implications are significant' or any close variant."
+
+**Quality gates** define the criteria for the self-editing pass. These are phrased as questions the pipeline must answer about its own output, with instructions to revise if the answer is unfavorable.
+
+The prompts are iterative. Every week, the output from the previous week gets reviewed against quality criteria, and the prompts get adjusted. Phrases that appeared too often get added to the anti-pattern list. Analytical frameworks that produced good results get reinforced. Structural patterns that correlated with higher-quality output get encoded into the content type instructions.
+
+This is not a set-it-and-forget-it system. It is a system that requires ongoing calibration, and the calibration itself is a form of editorial judgment.
+
+## The Honest Assessment
+
+After running this pipeline in production, here is what we know.
+
+The pipeline produces reliable, structured analysis at a volume and consistency that would be impossible for a small human team. Daily briefings, multiple analysis pieces per week, structured explainers — the output is sustainable and on-schedule. For a free publication with no staff, this is the enabling capability.
+
+The pipeline does not reliably produce exceptional work. It hits the bar for solid, informative analysis most of the time. It hits the bar for genuinely insightful analysis — the kind that changes how a reader thinks about a topic — some of the time. The gap between "most" and "all" for that higher bar is the primary area of ongoing work.
+
+The pipeline requires more human judgment than we initially expected. Not in the mechanical sense — the automation works — but in the editorial sense. Deciding which topics deserve Deep Signal treatment, recognizing when the pipeline's angle on a topic is too conventional, and identifying when a piece needs to be killed rather than published are all judgment calls that the self-editing stage does not reliably make.
+
+The pipeline improves through iteration in specific, measurable ways. Prompt adjustments produce detectable changes in output quality. Anti-pattern lists reduce repetitive constructions. Structural templates that encoded good analytical patterns lead to more consistently structured pieces. The improvement is incremental, not dramatic, but it is real and it compounds.
+
+That is the state of things. Not a finished product, but a system that works well enough to be useful and improves fast enough to be worth continuing. If that changes — if we hit a quality ceiling that iteration cannot break through — we will say so. That is what this section of the site is for.
